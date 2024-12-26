@@ -5,9 +5,15 @@ import axios, { AxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { toast } from '@/components/ui/use-toast'
-import { ApiResponse } from '@/types/ApiResponse'
 import { useParams, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { Input } from '@/components/ui/input'
@@ -17,12 +23,17 @@ export default function EditProduct() {
   const productId = params.productId
   const [product, setProduct] = useState<any>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const { data: session } = useSession();
+  const { data: session }: any = useSession()
   const router = useRouter()
 
-  const form = useForm({
+  const form = useForm<{
+    userId: string
+    title: string
+    description: string
+    image: File | string
+  }>({
     defaultValues: {
-      userId: session?.user.id,
+      userId: session?.user?.id || '',
       title: '',
       description: '',
       image: '',
@@ -47,10 +58,10 @@ export default function EditProduct() {
       }
     }
     if (productId) fetchProduct()
-  }, [productId, session?.user.id, form])
+  }, [productId, session?.user?.id, form])
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file: any = event.target.files?.[0]
     if (file) {
       const reader = new FileReader()
       reader.onloadend = () => {
@@ -74,7 +85,7 @@ export default function EditProduct() {
 
     setIsLoading(true)
     try {
-      const response = await axios.put<ApiResponse>(`/api/edit-product/${productId}`, formData, {
+      const response = await axios.put<any>(`/api/edit-product/${productId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -84,11 +95,11 @@ export default function EditProduct() {
         title: response.data.message,
         variant: 'default',
       })
-      if(response.data.message === "Product updated successfully!") {
-        router.replace("/dashboard")
+      if (response.data.message === 'Product updated successfully!') {
+        router.replace('/dashboard')
       }
     } catch (error) {
-      const axiosError = error as AxiosError<ApiResponse>
+      const axiosError = error as AxiosError<any>
       toast({
         title: 'Error',
         description: axiosError.response?.data.message,

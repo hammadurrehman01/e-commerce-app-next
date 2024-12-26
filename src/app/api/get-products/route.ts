@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const session = await getServerSession(authOptions)
     console.log("session =>", session);
     
-    const _user = session?.user
+    const _user:any = session?.user
 
     if (!session || !_user) {
       return new Response(JSON.stringify({ success: false, message: 'Not authenticated' }), {

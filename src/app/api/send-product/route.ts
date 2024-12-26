@@ -91,7 +91,7 @@ export async function POST(request: Request) {
   const userId = formData.get('userId') // Access userId
   const title = formData.get('title') // Access title
   const description = formData.get('description') // Access description
-  const image = formData.get('image') // Access image file
+  const image: any = formData.get('image') // Access image file
 
   try {
     console.log('title', title)

@@ -11,7 +11,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { signupSchema } from '@/schemas/signupSchema'
-import { ApiResponse } from '@/types/ApiResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
 import axios, { AxiosError } from 'axios'
 import { Loader2 } from 'lucide-react'
@@ -42,7 +41,7 @@ const Page = () => {
   const onSubmit = async (data: z.infer<typeof signupSchema>) => {
     try {
       setIsSubmitting(true)
-      const response = await axios.post<ApiResponse>('/api/sign-up', data)
+      const response = await axios.post<any>('/api/sign-up', data)
       toast({
         title: 'Success',
         description: response.data.message,
@@ -52,7 +51,7 @@ const Page = () => {
         router.replace('/sign-in')
       }
     } catch (error) {
-      const axiosError = error as AxiosError<ApiResponse>
+      const axiosError = error as AxiosError<any>
       toast({
         title: 'Error',
         description: axiosError.response?.data.message,

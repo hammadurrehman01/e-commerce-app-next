@@ -12,7 +12,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ApiResponse } from '@/types/ApiResponse'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { Pencil, X } from 'lucide-react'
@@ -33,12 +32,12 @@ const ProductCard = ({ product, onProductDelete }: Props) => {
   const openModal = () => setIsModalOpen(true)
   const closeModal = () => setIsModalOpen(false)
   const { toast } = useToast()
-  const { data: session } = useSession()
+  const { data: session }:any = useSession()
   const username = session?.user.username
 
   const handleDeleteConfirm = async () => {
 
-    const response = await axios.delete<ApiResponse>(`/api/delete-product/${product.id}`)
+    const response = await axios.delete<any>(`/api/delete-product/${product.id}`)
     toast({
       title: response.data.message,
     })

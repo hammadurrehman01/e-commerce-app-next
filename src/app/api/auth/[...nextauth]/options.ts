@@ -70,7 +70,7 @@ export const authOptions: NextAuthOptions = {
       }
       return true
     },
-    async session({ session, token }) {
+    async session({ session, token }:any) {
       // Add username and isAdmin to the session object
       session.user.id = token.id
       session.user.username = token.username

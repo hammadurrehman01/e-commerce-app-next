@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { useToast } from '@/components/ui/use-toast'
-import { ApiResponse } from '@/types/ApiResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
 import axios, { AxiosError } from 'axios'
 import { Loader2, RefreshCcw, SquarePlus } from 'lucide-react'
@@ -27,7 +26,7 @@ function UserDashboard() {
     setProducts(products.filter((product) => product.id !== productId))
   }
 
-  const { data: session } = useSession()
+  const { data: session }:any = useSession()
 
   const form = useForm({
     resolver: zodResolver(acceptMessageSchema),
@@ -38,7 +37,7 @@ function UserDashboard() {
       setIsLoading(true)
       setIsSwitchLoading(false)
       try {
-        const response: any = await axios.get<ApiResponse>('/api/get-products')
+        const response: any = await axios.get<any>('/api/get-products')
 
         setProducts(response.data.products || [])
         if (refresh) {
@@ -48,7 +47,7 @@ function UserDashboard() {
           })
         }
       } catch (error) {
-        const axiosError = error as AxiosError<ApiResponse>
+        const axiosError = error as AxiosError<any>
         toast({
           title: 'Error',
           description: axiosError.response?.data.message,
@@ -71,7 +70,7 @@ function UserDashboard() {
     return <div></div>
   }
 
-  const { username } = session.user as User
+  const { username }:any = session.user as any
 
   const baseUrl = `${window.location.protocol}//${window.location.host}`
   const profileUrl = `${baseUrl}/u/${username}`

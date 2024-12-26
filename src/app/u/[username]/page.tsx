@@ -1,13 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import axios, { AxiosError } from 'axios'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { CardHeader, CardContent, Card } from '@/components/ui/card'
 import {
   Form,
   FormControl,
@@ -16,34 +9,50 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Textarea } from '@/components/ui/textarea'
-import { toast } from '@/components/ui/use-toast'
-import * as z from 'zod'
-import { ApiResponse } from '@/types/ApiResponse'
-import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
-import { messageSchema } from '@/schemas/messageSchema'
-import { suggestedMessageChildDiv, suggestedMessageParentDiv } from '@/styles/styles'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
+import { toast } from '@/components/ui/use-toast'
+import axios, { AxiosError } from 'axios'
+import { Loader2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { useParams, useRouter } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+
+interface Session {
+  user: {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
+}
+
+interface ExtendedSession extends Session {
+  user: {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
+}
 
 export default function SendMessage() {
+  const { data: session } = useSession() as { data: ExtendedSession | null };
   const params = useParams<{ username: string }>()
   const username = params.username
   const [suggestedMessages, setSuggestedMessages] = useState('')
   const [message, setMessage] = useState('')
   const [imagePreview, setImagePreview] = useState<string | null>(null)
 
-  const { data: session } = useSession()
+  // const { data: session } = useSession()
   const router = useRouter()
 
-  const form = useForm({
+  const form = useForm<{ userId: string; title: string; description: string; image: File | null }>({
     defaultValues: {
-      userId: session?.user.id,
+      userId: session?.user?.id ?? '',
       title: '',
       description: '',
-      image: '',
+      image: null,
     },
   })
 
@@ -53,7 +62,7 @@ export default function SendMessage() {
         userId: session.user.id,
         title: '',
         description: '',
-        image: '',
+        image: null,
       })
     }
   }, [session?.user.id, form])
@@ -73,7 +82,7 @@ export default function SendMessage() {
 
     setIsLoading(true)
     try {
-      const response = await axios.post<ApiResponse>('/api/send-product', formData, {
+      const response = await axios.post('/api/send-product', formData, {
         headers: {
           'Content-Type': 'multipart/form-data', // Ensure the correct content type is set
         },
@@ -88,7 +97,7 @@ export default function SendMessage() {
         router.replace('/dashboard')
       }
     } catch (error) {
-      const axiosError = error as AxiosError<ApiResponse>
+      const axiosError = error as AxiosError<any>
       toast({
         title: 'Error',
         description: axiosError.response?.data.message,
